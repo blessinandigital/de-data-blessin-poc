@@ -1,0 +1,19 @@
+{
+  "name": "de-data-cleanup",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test-ci": "jest",
+    "lint": "eslint ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "contentful-management": "^11.37.0",
+    "dotenv": "^16.4.5"
+  }
+}
