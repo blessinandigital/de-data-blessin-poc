@@ -8,16 +8,10 @@ const ingredientItemContentType = process.env.CONTENT_TYPE_INGREDIENT_ITEM
 const ingredientContentType = process.env.CONTENT_TYPE_INGREDIENT
 
 async function getIngredientItemData() {
-    // const {fetchedIngredientSectionData, fetchedIngredientItemsData} = await fetchData();
-    // const fetchedIngredientSectionData = await fetchData(ingredientSectionContentType);
     const fetchedIngredientItemsData = await fetchData(ingredientItemContentType);
 
-    // const ingredientSection = fetchedData.map((data) => data["ingredientObject"])
-
-    // console.log('ingredientSection --->: ', fetchedIngredientSectionData)
     console.log('ingredientItem fetched --->: ', fetchedIngredientItemsData)
 
-    let ingredientSectionList = [];
     let ingredientItemList = [];
 
     for(const entry of fetchedIngredientItemsData) {
@@ -30,13 +24,8 @@ async function getIngredientItemData() {
   }
 
 async function getIngredientItemData() {
-	// const {fetchedIngredientSectionData, fetchedIngredientItemsData} = await fetchData();
-	// const fetchedIngredientSectionData = await fetchData(ingredientSectionContentType);
 	const fetchedIngredientData = await fetchData(ingredientContentType);
 
-	// const ingredientSection = fetchedData.map((data) => data["ingredientObject"])
-
-	// console.log('ingredientSection --->: ', fetchedIngredientSectionData)
 	console.log('ingredient fetched --->: ', fetchedIngredientData)
 
 	let ingredientList = [];
