@@ -23,7 +23,7 @@ async function getIngredientItemData() {
     console.log('ingredient items count: ', ingredientItemList.length)
   }
 
-async function getIngredientItemData() {
+async function getIngredientData() {
 	const fetchedIngredientData = await fetchData(ingredientContentType);
 
 	console.log('ingredient fetched --->: ', fetchedIngredientData)
@@ -38,7 +38,7 @@ async function getIngredientItemData() {
 
 	console.log('ingredient count: ', ingredientList.length)
 }
-getIngredientitemData();
 getIngredientItemData();
+getIngredientData();
 
 console.log("Hello")
