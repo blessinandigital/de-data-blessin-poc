@@ -16,7 +16,7 @@ async function getIngredientItemData() {
 
     for(const entry of fetchedIngredientItemsData) {
         console.log('content type --> ', entry.sys['contentType']['sys'])
-        ingredientItemList.push(entry.fields['name']);
+        ingredientItemList.push(entry);
     }
     console.log('fields -->:', ingredientItemList)
 
@@ -26,19 +26,19 @@ async function getIngredientItemData() {
 async function getIngredientData() {
 	const fetchedIngredientData = await fetchData(ingredientContentType);
 
-	console.log('ingredient fetched --->: ', fetchedIngredientData)
+	// console.log('ingredient fetched --->: ', fetchedIngredientData)
 
 	let ingredientList = [];
 
 	for(const entry of fetchedIngredientData) {
 			console.log('content type --> ', entry.sys['contentType']['sys'])
-			ingredientItemList.push(entry.fields['name']);
+			ingredientList.push(entry);
 	}
-	console.log('fields -->:', ingredientList)
+	console.log('fields ingredients -->:', ingredientList)
 
 	console.log('ingredient count: ', ingredientList.length)
 }
-getIngredientItemData();
+// getIngredientItemData();
 getIngredientData();
 
 console.log("Hello")
