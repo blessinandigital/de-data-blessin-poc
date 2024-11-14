@@ -3,7 +3,6 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-const ingredientSectionContentType = process.env.CONTENT_TYPE_INGREDIENT_SECTION
 const ingredientItemContentType = process.env.CONTENT_TYPE_INGREDIENT_ITEM
 const ingredientContentType = process.env.CONTENT_TYPE_INGREDIENT
 
@@ -17,6 +16,7 @@ async function getIngredientItemData() {
     for(const entry of fetchedIngredientItemsData) {
         console.log('content type --> ', entry.sys['contentType']['sys'])
         ingredientItemList.push(entry);
+				console.log('ingredient item - ', entry.fields['name'])
     }
     console.log('fields -->:', ingredientItemList)
 
@@ -32,13 +32,15 @@ async function getIngredientData() {
 
 	for(const entry of fetchedIngredientData) {
 			console.log('content type --> ', entry.sys['contentType']['sys'])
+			console.log('ingredient - ', entry.fields['name'])
+			console.log('ingredient (unit) - ', entry.fields['imperialUnit'], entry.fields['energyKK'])
 			ingredientList.push(entry);
 	}
 	console.log('fields ingredients -->:', ingredientList)
 
 	console.log('ingredient count: ', ingredientList.length)
 }
-// getIngredientItemData();
+getIngredientItemData();
 getIngredientData();
 
 console.log("Hello")
