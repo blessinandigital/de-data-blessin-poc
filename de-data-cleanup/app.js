@@ -1,46 +1,27 @@
-const fetchData = require("./fetchData")
-const dotenv = require('dotenv');
+const { getIngredientData, getIngredientItemData} = require('./getData')
+const { transformData, transformIngredientData, findNutritionalData, createIngredientListEntry } = require('./transformData')
 
-dotenv.config();
+	// de-duplicated data
+transformData().then((ingredientItemListDeDuplicated) => {
+	console.log('items: ', JSON.stringify(ingredientItemListDeDuplicated, null, 2))
+	// const newIngredientlist = findNutritionalData(ingredientItemListDeDuplicated)
+	// console.log(JSON.stringify(newIngredientlist, null, 2))
+})
+.catch((error) => {
+	console.error('Error deduplicating data: ', error)
+})
 
-const ingredientItemContentType = process.env.CONTENT_TYPE_INGREDIENT_ITEM
-const ingredientContentType = process.env.CONTENT_TYPE_INGREDIENT
+createIngredientListEntry().then((ingredientList) => {
+	console.log('ingredientSection items: ', JSON.stringify(ingredientList, null, 2))
 
-async function getIngredientItemData() {
-    const fetchedIngredientItemsData = await fetchData(ingredientItemContentType);
+})
 
-    console.log('ingredientItem fetched --->: ', fetchedIngredientItemsData)
-
-    let ingredientItemList = [];
-
-    for(const entry of fetchedIngredientItemsData) {
-        console.log('content type --> ', entry.sys['contentType']['sys'])
-        ingredientItemList.push(entry);
-				console.log('ingredient item - ', entry.fields['name'])
-    }
-    console.log('fields -->:', ingredientItemList)
-
-    console.log('ingredient items count: ', ingredientItemList.length)
-  }
-
-async function getIngredientData() {
-	const fetchedIngredientData = await fetchData(ingredientContentType);
-
-	// console.log('ingredient fetched --->: ', fetchedIngredientData)
-
-	let ingredientList = [];
-
-	for(const entry of fetchedIngredientData) {
-			console.log('content type --> ', entry.sys['contentType']['sys'])
-			console.log('ingredient - ', entry.fields['name'])
-			console.log('ingredient (unit) - ', entry.fields['imperialUnit'], entry.fields['energyKK'])
-			ingredientList.push(entry);
-	}
-	console.log('fields ingredients -->:', ingredientList)
-
-	console.log('ingredient count: ', ingredientList.length)
-}
-getIngredientItemData();
-getIngredientData();
+// transformIngredientData().then((ingredientListDeDuplicated) => {
+// 	console.log('de-duplicated ingredients: ', JSON.stringify(ingredientListDeDuplicated, null, 2))
+// 	console.log('deduplicated items count: ', ingredientListDeDuplicated.length)
+// })
+// .catch((error) => {
+// 	console.error('Error deduplicating data: ', error)
+// })
 
 console.log("Hello")

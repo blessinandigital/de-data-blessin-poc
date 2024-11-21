@@ -17,16 +17,19 @@ async function fetchData(contentType){
     .then((space) => space.getEnvironment(environmentId))
     .then((environment) => environment.getEntries({
         content_type: contentType,
-        limit: 150,
+        'sys.publishedAt[exists]': true, // do we consider draft entries?
+        // 'fields.name[in]': 'chives',
+        limit: 10,
         
     }))
     .then((ingredientEntries) => ingredientEntries.items)
-    
+
+    // handle pagination case
     return ingredientList
 
   }catch(error){
     console.error(error)
-    return 'Error '+ error
+    return 'Error fetching contentful data'+ error
   }
 }
 
