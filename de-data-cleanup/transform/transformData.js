@@ -31,11 +31,11 @@
  * @property {number} metricWeight - The weight of the ingredient in metric units.
  */
 
-const fetchData = require("./fetchData")
+const fetchData = require("../extract/fetchData")
 const dotenv = require('dotenv');
 const contentfulManagement = require('contentful-management');
-const convertImperial = require('./convertToImperialUnit')
-const { getIngredientItemData, getIngredientData, getIngredientSectionData, getUnitData } = require("./getData");
+const convertImperial = require('./utils/convertToImperialUnit')
+const { getIngredientItemData, getIngredientData, getIngredientSectionData, getUnitData } = require("../extract/getData");
 
 
 // 1. calculate and convert imperial metric
@@ -54,7 +54,7 @@ const { getIngredientItemData, getIngredientData, getIngredientSectionData, getU
 //             const { fields: { name: ingredientName } } = item;
 //             return ingredientName['en-US'];
 //         });
-    
+
 //         const requestBody = {
 //             title: ingredientNames.join(', '),
 //             // ingr: ingredientNames.map(name => name.split(',')[0].trim())
@@ -82,9 +82,9 @@ const { getIngredientItemData, getIngredientData, getIngredientSectionData, getU
 //         //     title: JSON.stringify(ingredientName['en-US']),
 //         //     ingr: [inputName]
 //         //   };
-        
+
 //         const standardMetricUnitList = ['grams', 'gram', 'milliliters', 'milliliter', 'liters', 'liter']
-        
+
 //         // send api POST request to edamam - with list of ingredients - to move it outside the function and take in list of ingredients - UPDATE - to be done at Ingredient level
 //         const edamamResponse = fetch(
 //             `${edamamApiURL}/nutrition-details?app_id=${edamamAppId}&app_key=${edamamApiKey}`, {
@@ -142,7 +142,7 @@ dotenv.config();
 async function createIngredientListEntry() {
     const ingredientSectionList = await getIngredientSectionData();
     const ingredientItemsList = await getIngredientItemData();
-    
+
     const SPACE_ID = process.env.CONTENTFUL_SPACE_ID;
     const ENVIRONMENT_ID = process.env.CONTENTFUL_ENVIRONMENT_ID;
     const ACCESS_TOKEN = process.env.CMA_TOKEN;
@@ -157,7 +157,7 @@ async function createIngredientListEntry() {
         // Get the list of ingredientItem IDs
         const ingredientItemIdList = (ingredientSection.fields.ingredientItems['en-US'] || []).map((ingredientItem) => {
             console.log('---> ingredient section ids', ingredientItem.sys.id);
-            return ingredientItem.sys.id; 
+            return ingredientItem.sys.id;
         });
 
         // Filter ingredientItems based on the IDs
@@ -168,88 +168,88 @@ async function createIngredientListEntry() {
         console.log('Filtered Ingredient Items:', JSON.stringify(ingredientItems, null, 2));
 
         // call edamam API 
-        if(ingredientItems && ingredientItems.length){
-        const ingredientDataList = await fetchIngredientItemEdamam(ingredientItems);
+        if (ingredientItems && ingredientItems.length) {
+            const ingredientDataList = await fetchIngredientItemEdamam(ingredientItems);
 
 
-        // Create a list of ingredient references for IngredientListData
-        const ingredientListDataPromises = ingredientItems.map((ingredientItem, index) => {
-            const ingredientData = ingredientDataList[index];
-            return getIngredientUnit(ingredientItem.fields.ingredient['en-US'].sys.id).then(({ metricName, imperialName }) => {
-                const ingredientListData = {
-                    amount: {
-                        metric: ingredientData.amount,
-                        imperial: ingredientData.amount,
-                        friendly: ingredientData.friendlyAmount,
-                    },
-                    unit: {
-                        metric: metricName || ingredientData.unit,
-                        imperial: imperialName,
-                        friendly: ingredientData.friendlyUnit,
-                    },
-                    metricWeight: ingredientData.metricWeight,
-                    comment: {},
-                };
-        
-                if (ingredientItem.fields.friendlyAmount?.['en-US'] && !ingredientDataList.amount?.friendly.length && !ingredientDataList.unt?.friendly.length) {
-                    ingredientListData.amount.friendly = ingredientItem.fields.friendlyAmount['en-US'];
-                    ingredientListData.unit.friendly = ingredientItem.fields.friendlyAmount['en-US'];
-                }
-        
-                if(!ingredientDataList.amount?.metric && !ingredientDataList.unit?.metric){
-                ingredientListData.amount.metric = ingredientItem.fields.metricAmount['en-US'];
-                ingredientListData.unit.metric = metricName;
-                }
-        
-                if (ingredientItem.fields.imperialAmount['en-US']) {
-                    ingredientListData.amount.imperial = ingredientItem.fields.imperialAmount['en-US'];
-                    ingredientListData.unit.imperial = imperialName;
-                }
-        
-                if (ingredientItem.fields.comment?.['en-US']) {
-                    ingredientListData.comment['en-GB'] = ingredientItem.fields.comment['en-US']; // get it from the edamam api
-                    ingredientListData.comment['en-US'] = ingredientItem.fields.comment['en-US'];
-                }
-        
-                if (ingredientItem.fields.comment?.['de']) {
-                    ingredientListData.comment.de = ingredientItem.fields.comment['de'];
-                }
-        
-                if (ingredientItem.fields.includeInShoppingList?.['en-US']) {
-                    ingredientListData.includeInShoppingList = ingredientItem.fields.includeInShoppingList['en-US'];
-                }
-        
-                ingredientListData.metricWeight = ingredientItem.fields.metricAmount['en-US']; // It will contain the value used to conduct calculations
-        
-                return ingredientListData;
+            // Create a list of ingredient references for IngredientListData
+            const ingredientListDataPromises = ingredientItems.map((ingredientItem, index) => {
+                const ingredientData = ingredientDataList[index];
+                return getIngredientUnit(ingredientItem.fields.ingredient['en-US'].sys.id).then(({ metricName, imperialName }) => {
+                    const ingredientListData = {
+                        amount: {
+                            metric: ingredientData.amount,
+                            imperial: ingredientData.amount,
+                            friendly: ingredientData.friendlyAmount,
+                        },
+                        unit: {
+                            metric: metricName || ingredientData.unit,
+                            imperial: imperialName,
+                            friendly: ingredientData.friendlyUnit,
+                        },
+                        metricWeight: ingredientData.metricWeight,
+                        comment: {},
+                    };
+
+                    if (ingredientItem.fields.friendlyAmount?.['en-US'] && !ingredientDataList.amount?.friendly.length && !ingredientDataList.unt?.friendly.length) {
+                        ingredientListData.amount.friendly = ingredientItem.fields.friendlyAmount['en-US'];
+                        ingredientListData.unit.friendly = ingredientItem.fields.friendlyAmount['en-US'];
+                    }
+
+                    if (!ingredientDataList.amount?.metric && !ingredientDataList.unit?.metric) {
+                        ingredientListData.amount.metric = ingredientItem.fields.metricAmount['en-US'];
+                        ingredientListData.unit.metric = metricName;
+                    }
+
+                    if (ingredientItem.fields.imperialAmount['en-US']) {
+                        ingredientListData.amount.imperial = ingredientItem.fields.imperialAmount['en-US'];
+                        ingredientListData.unit.imperial = imperialName;
+                    }
+
+                    if (ingredientItem.fields.comment?.['en-US']) {
+                        ingredientListData.comment['en-GB'] = ingredientItem.fields.comment['en-US']; // get it from the edamam api
+                        ingredientListData.comment['en-US'] = ingredientItem.fields.comment['en-US'];
+                    }
+
+                    if (ingredientItem.fields.comment?.['de']) {
+                        ingredientListData.comment.de = ingredientItem.fields.comment['de'];
+                    }
+
+                    if (ingredientItem.fields.includeInShoppingList?.['en-US']) {
+                        ingredientListData.includeInShoppingList = ingredientItem.fields.includeInShoppingList['en-US'];
+                    }
+
+                    ingredientListData.metricWeight = ingredientItem.fields.metricAmount['en-US']; // It will contain the value used to conduct calculations
+
+                    return ingredientListData;
+                });
             });
-        });
-        
-        try {
-            const ingredientListData = await Promise.all(ingredientListDataPromises);
-            console.log('Ingredient List Data:', JSON.stringify(ingredientListData, null, 2));
 
-            // Update the Ingredient Section
-            const space = await client.getSpace(SPACE_ID);
-            const environment = await space.getEnvironment(ENVIRONMENT_ID);
-            const entry = await environment.getEntry(ingredientSection.sys.id);
+            try {
+                const ingredientListData = await Promise.all(ingredientListDataPromises);
+                console.log('Ingredient List Data:', JSON.stringify(ingredientListData, null, 2));
 
-            // Ensure the ingredientListData field is initialized
-            if (!entry.fields.ingredientListData) {
-                entry.fields.ingredientListData = {};
+                // Update the Ingredient Section
+                const space = await client.getSpace(SPACE_ID);
+                const environment = await space.getEnvironment(ENVIRONMENT_ID);
+                const entry = await environment.getEntry(ingredientSection.sys.id);
+
+                // Ensure the ingredientListData field is initialized
+                if (!entry.fields.ingredientListData) {
+                    entry.fields.ingredientListData = {};
+                }
+                entry.fields.ingredientListData['en-US'] = ingredientListData;
+
+                // Update and publish the entry
+                const updatedEntry = await entry.update();
+                const publishedEntry = await updatedEntry.publish();
+
+                console.log('Ingredient Section updated and published:', JSON.stringify(publishedEntry, null, 2));
+            } catch (error) {
+                console.error('Error fetching ingredient list data or updating Ingredient Section:', error);
             }
-            entry.fields.ingredientListData['en-US'] = ingredientListData;
-
-            // Update and publish the entry
-            const updatedEntry = await entry.update();
-            const publishedEntry = await updatedEntry.publish();
-
-            console.log('Ingredient Section updated and published:', JSON.stringify(publishedEntry, null, 2));
-        } catch (error) {
-            console.error('Error fetching ingredient list data or updating Ingredient Section:', error);
         }
     }
-}
 }
 async function fetchIngredientItemEdamam(ingredientItems) {
     const edamamApiURL = process.env.EDAMAM_API_BASE_URL;
@@ -271,12 +271,12 @@ async function fetchIngredientItemEdamam(ingredientItems) {
     try {
         const response = await fetch(
             `${edamamApiURL}/nutrition-details?app_id=${edamamAppId}&app_key=${edamamApiKey}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestBody),
-            }
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody),
+        }
         );
 
         if (!response.ok) {
@@ -306,7 +306,7 @@ async function fetchIngredientItemEdamam(ingredientItems) {
                     amount = parsedItem.quantity;
                     metricWeight = parsedItem.weight;
                     friendlyAmount = extractFirstNumber(ingredientItem.text);
-                }else{
+                } else {
                     friendlyAmount = extractFirstNumber(ingredientItem.text);
                     friendlyUnit = parsedItem.measure
                     metricWeight = parsedItem.weight;
@@ -326,41 +326,41 @@ async function fetchIngredientItemEdamam(ingredientItems) {
         return ingredientDataList; // Return the list of ingredient data
     } catch (error) {
         console.error('Error fetching nutritional data:', error);
-        return []; 
+        return [];
     }
 }
 
 function extractFirstNumber(ingredientItemText) {
-  // Regular expression to find the first number, decimal, or fraction in the string
-  const match = ingredientItemText.match(/(\d+\.\d+|\d+\/\d+|\d+)/);
-    
-  if (match) {
-      const value = match[0];
-      
-      // Check if the value is a fraction
-      if (value.includes('/')) {
-          const [numerator, denominator] = value.split('/').map(Number);
-          // Check if both numerator and denominator are valid numbers
-          if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
-              return numerator / denominator; // Return the decimal value of the fraction
-          } else {
-              return 1; // Return 1 if the fraction is invalid
-          }
-      } else if (value.includes('.')) {
-          // If it's a decimal number, return it as a number
-          return Number(value);
-      }
-      
-      // If it's a whole number, return it as a number
-      return Number(value);
-  }
-  
-  return 1; // Return 1 if no match is found
+    // Regular expression to find the first number, decimal, or fraction in the string
+    const match = ingredientItemText.match(/(\d+\.\d+|\d+\/\d+|\d+)/);
+
+    if (match) {
+        const value = match[0];
+
+        // Check if the value is a fraction
+        if (value.includes('/')) {
+            const [numerator, denominator] = value.split('/').map(Number);
+            // Check if both numerator and denominator are valid numbers
+            if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
+                return numerator / denominator; // Return the decimal value of the fraction
+            } else {
+                return 1; // Return 1 if the fraction is invalid
+            }
+        } else if (value.includes('.')) {
+            // If it's a decimal number, return it as a number
+            return Number(value);
+        }
+
+        // If it's a whole number, return it as a number
+        return Number(value);
+    }
+
+    return 1; // Return 1 if no match is found
 }
 
 // from the ingredent collection filter the right ingredient id
 // collect the right the metricUnitId and imperialUnitId
-async function getIngredientUnit(ingredientId){
+async function getIngredientUnit(ingredientId) {
     console.log('5')
     const ingredients = await getIngredientData([ingredientId])
     console.log('ingredients fetched ', ingredients)
@@ -369,10 +369,10 @@ async function getIngredientUnit(ingredientId){
         return ingredient.sys.id === ingredientId
     })
 
-    if(ingredientFetched){
+    if (ingredientFetched) {
         const metricUnitId = ingredientFetched.fields.metricUnit?.['en-US']?.sys.id || null;
         const imperialUnitId = ingredientFetched.fields.imperialUnit?.['en-US']?.sys.id || null;
-        const unitList =  await getUnitData([metricUnitId, imperialUnitId])
+        const unitList = await getUnitData([metricUnitId, imperialUnitId])
         console.log('unit list fetched ', JSON.stringify(unitList, null, 2))
         const metricValue = unitList.find(entry => entry.sys.id === metricUnitId);
         const imperialValue = unitList.find(entry => entry.sys.id === imperialUnitId);
@@ -395,7 +395,7 @@ async function getIngredientUnit(ingredientId){
             console.error(`Unit data not found for ingredient with ID ${ingredientId}`);
             return {};
         }
-    }else{
+    } else {
         console.error(`Ingredient with ID ${ingredientId} not found.`);
         return { metricName: null, imperialName: null };
     }

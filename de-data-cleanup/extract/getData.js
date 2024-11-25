@@ -9,30 +9,30 @@ const ingredientSectionContentType = process.env.CONTENT_TYPE_INGREDIENT_SECTION
 const unitContentType = process.env.CONTENT_TYPE_UNIT
 
 async function getIngredientItemData() {
-    const fetchedIngredientItemsData = await fetchData(ingredientItemContentType);
+	const fetchedIngredientItemsData = await fetchData(ingredientItemContentType);
 
-    let ingredientItemList = [];
+	let ingredientItemList = [];
 
-    for(const entry of fetchedIngredientItemsData) {
-        ingredientItemList.push(entry);
-    }
-    console.log('ingredient items count: ', ingredientItemList.length)
+	for (const entry of fetchedIngredientItemsData) {
+		ingredientItemList.push(entry);
+	}
+	console.log('ingredient items count: ', ingredientItemList.length)
 
-    return ingredientItemList
-    // return fetchedIngredientItemsData
-  }
+	return ingredientItemList
+	// return fetchedIngredientItemsData
+}
 
 async function getIngredientData(entryList = null) {
 	const fetchedIngredientData = await fetchData(ingredientContentType, entryList);
 
 	let ingredientList = [];
 
-	for(const entry of fetchedIngredientData) {
+	for (const entry of fetchedIngredientData) {
 		ingredientList.push(entry);
 	}
 	console.log('ingredient count: ', ingredientList.length)
 
-    return ingredientList
+	return ingredientList
 }
 
 async function getIngredientSectionData() {
@@ -40,12 +40,12 @@ async function getIngredientSectionData() {
 
 	let ingredientSectionList = [];
 
-	for(const entry of fetchedIngredientSectionData) {
-        ingredientSectionList.push(entry);
+	for (const entry of fetchedIngredientSectionData) {
+		ingredientSectionList.push(entry);
 	}
 	console.log('ingredient section count: ', ingredientSectionList.length)
 
-    return ingredientSectionList
+	return ingredientSectionList
 }
 
 async function getUnitData(entryList = null) {
@@ -53,12 +53,12 @@ async function getUnitData(entryList = null) {
 
 	let unitList = [];
 
-	for(const entry of fetchedUnitData) {
-        console.log('unit entry: ', entry)
-        unitList.push(entry);
+	for (const entry of fetchedUnitData) {
+		console.log('unit entry: ', entry)
+		unitList.push(entry);
 	}
 	console.log('unit section count: ', unitList.length)
 
-    return unitList
+	return unitList
 }
-module.exports = {getIngredientData, getIngredientItemData, getIngredientSectionData, getUnitData}
+module.exports = { getIngredientData, getIngredientItemData, getIngredientSectionData, getUnitData }

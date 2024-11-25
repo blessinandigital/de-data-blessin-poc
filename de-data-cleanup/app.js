@@ -1,6 +1,6 @@
-const { getIngredientData, getIngredientItemData} = require('./getData');
-const getDeDuplicateIngredients = require('./transformIngredients')
-const { createIngredientListEntry } = require('./transformData')
+const { getIngredientData, getIngredientItemData } = require('./extract/getData');
+const getDeDuplicateIngredients = require('./transform/transformIngredients')
+const { createIngredientListEntry } = require('./transform/transformData')
 
 
 
@@ -9,7 +9,7 @@ getDeDuplicateIngredients().then((ingredientDeduplicatedList) => {
 	console.log('ingredient deduplicated -->: ', JSON.stringify(ingredientDeduplicatedList, null, 2))
 
 }).catch((error) => {
-		console.error('Error deduplicating data: ', error)
+	console.error('Error deduplicating data: ', error)
 })
 
 createIngredientListEntry().then((ingredientList) => {
