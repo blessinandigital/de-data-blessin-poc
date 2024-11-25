@@ -6,6 +6,7 @@ dotenv.config();
 const ingredientItemContentType = process.env.CONTENT_TYPE_INGREDIENT_ITEM
 const ingredientContentType = process.env.CONTENT_TYPE_INGREDIENT
 const ingredientSectionContentType = process.env.CONTENT_TYPE_INGREDIENT_SECTION
+const unitContentType = process.env.CONTENT_TYPE_UNIT
 
 async function getIngredientItemData() {
     const fetchedIngredientItemsData = await fetchData(ingredientItemContentType);
@@ -21,15 +22,14 @@ async function getIngredientItemData() {
     // return fetchedIngredientItemsData
   }
 
-async function getIngredientData() {
-	const fetchedIngredientData = await fetchData(ingredientContentType);
+async function getIngredientData(entryList = null) {
+	const fetchedIngredientData = await fetchData(ingredientContentType, entryList);
 
 	let ingredientList = [];
 
 	for(const entry of fetchedIngredientData) {
 		ingredientList.push(entry);
 	}
-	// console.log('fields ingredients -->:', ingredientList)
 	console.log('ingredient count: ', ingredientList.length)
 
     return ingredientList
@@ -43,9 +43,22 @@ async function getIngredientSectionData() {
 	for(const entry of fetchedIngredientSectionData) {
         ingredientSectionList.push(entry);
 	}
-	// console.log('fields ingredients -->:', ingredientList)
 	console.log('ingredient section count: ', ingredientSectionList.length)
 
     return ingredientSectionList
 }
-module.exports = {getIngredientData, getIngredientItemData, getIngredientSectionData}
+
+async function getUnitData(entryList = null) {
+	const fetchedUnitData = await fetchData(unitContentType, entryList);
+
+	let unitList = [];
+
+	for(const entry of fetchedUnitData) {
+        console.log('unit entry: ', entry)
+        unitList.push(entry);
+	}
+	console.log('unit section count: ', unitList.length)
+
+    return unitList
+}
+module.exports = {getIngredientData, getIngredientItemData, getIngredientSectionData, getUnitData}
