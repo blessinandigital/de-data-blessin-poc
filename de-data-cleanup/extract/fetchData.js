@@ -19,7 +19,7 @@ async function fetchData(contentType, entryIds = null) {
         .then((environment) => {
           const query = {
             'sys.publishedAt[exists]': true,
-            limit: 5,
+            limit: 10,
           };
   
           if (entryIds) {

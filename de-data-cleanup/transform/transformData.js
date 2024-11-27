@@ -31,109 +31,11 @@
  * @property {number} metricWeight - The weight of the ingredient in metric units.
  */
 
-const fetchData = require("../extract/fetchData")
 const dotenv = require('dotenv');
 const contentfulManagement = require('contentful-management');
 const convertImperial = require('./utils/convertToImperialUnit')
 const { getIngredientItemData, getIngredientData, getIngredientSectionData, getUnitData } = require("../extract/getData");
 
-
-// 1. calculate and convert imperial metric
-// 2. send API request to Edamam to calculate the nutritional data
-
-
-// async function fetchIngredientItemEdamam(ingredientItemList) {
-//     const edamamApiURL = process.env.EDAMAM_API_BASE_URL
-//     const edamamAppId = process.env.EDAMAM_APP_ID
-//     const edamamApiKey = process.env.EDAMAM_API_KEY
-
-//     // return metric, imperial, friendly amount and unit
-//     // nutritionalDataResult = ingredientItemList.forEach(element => {
-
-//         const ingredientNames = ingredientItemList.map(item => {
-//             const { fields: { name: ingredientName } } = item;
-//             return ingredientName['en-US'];
-//         });
-
-//         const requestBody = {
-//             title: ingredientNames.join(', '),
-//             // ingr: ingredientNames.map(name => name.split(',')[0].trim())
-//             ingr: ingredientNames.map(name => name.trim())
-//         };
-//         // const {
-//         //     fields: {
-//         //       name: ingredientName,
-//         //       metricAmount: ingredientMetricUnit,
-//         //       imperialUnit: ingredientImperialUnit,
-//         //       friendlyAmount: ingredientFriendlyAmount,
-//         //       comment: ingredientPrepComment,
-//         //       ingredient: ingredientBaseInfo
-
-//         //     },
-//         //   } = element;
-//         //   console.log('--->', JSON.stringify(element, null, 2))
-//         //   console.log('2--->', ingredientName)
-//         // //   const response = fetch(
-//         // //     `${edamamApiURL}/nutrition-data?app_id=${edamamAppId}&app_key=${edamamApiKey}&nutrition-type=cooking&ingr=${ingredientName['en-US']}`
-//         // //   );
-//         // const inputName = (ingredientName['en-US'].split(','))[0]
-//         // console.log('input name: ', inputName)
-//         // const requestBody = {
-//         //     title: JSON.stringify(ingredientName['en-US']),
-//         //     ingr: [inputName]
-//         //   };
-
-//         const standardMetricUnitList = ['grams', 'gram', 'milliliters', 'milliliter', 'liters', 'liter']
-
-//         // send api POST request to edamam - with list of ingredients - to move it outside the function and take in list of ingredients - UPDATE - to be done at Ingredient level
-//         const edamamResponse = fetch(
-//             `${edamamApiURL}/nutrition-details?app_id=${edamamAppId}&app_key=${edamamApiKey}`, {
-//                 method: 'POST',
-//                 headers: {
-//                     'Content-Type': 'application/json'
-//                 },
-//                 body: JSON.stringify(requestBody),
-//             }
-//             ).then(response => {
-//                 if (!response.ok) {
-//                   throw new Error(`HTTP error ${response.status} - request body ${JSON.stringify(requestBody, null, 2)}`);
-//                 }
-//                 return response.json();
-//               })
-//               .then(data => {
-//                 const formattedJSON = JSON.stringify(data, null, 2);
-//                 console.log('Edamam API Response JSON:\n', formattedJSON);
-//                 console.log('Raw data:', data);
-//                 (data.ingredients).forEach(ingredientItem => {
-//                     const isPresent = standardMetricUnitList.includes(ingredientItem.parsed[0].measure)
-//                     console.log('7-->', ingredientItem.parsed[0].measure)
-//                     console.log('isPresent -->', isPresent)
-
-//                     // if unit present
-//                     if(isPresent){
-//                         return {unit: ingredientItem.parsed[0].measure,
-//                              amount: ingredientItem.parsed[0].quantity, 
-//                              metricWeight: ingredientItem.parsed[0].weight}
-//                     }else if(ingredientItem.parsed[0].measure === 'whole'){
-//                         return {unit: 'whole',
-//                             amount: ingredientItem.parsed[0].quantity, 
-//                             metricWeight: ingredientItem.parsed[0].weight} 
-//                     }else{
-//                         return {unit: '',
-//                             amount: ingredientItem.parsed[0].quantity, 
-//                             metricWeight: ingredientItem.parsed[0].weight} 
-//                     }
-//                 });
-//               })
-//               .catch(error => {
-//                 console.error('Error fetching nutritional data:', error);
-//               });
-//             // });
-
-//             // need to calculate imperial amount
-//             // return friendly, imperial, metric, metricWeight values
-//             // if the metric 'whole' stores a nothing
-// }
 
 dotenv.config();
 
@@ -263,7 +165,7 @@ async function fetchIngredientItemEdamam(ingredientItems) {
 
     const requestBody = {
         title: ingredientNames.join(', '),
-        ingr: ingredientNames.map(name => name.trim())
+        ingr: ingredientNames.map(name => name.trim()) // use friendlyAmount + ingredientName
     };
 
     const standardMetricUnitList = ['grams', 'gram', 'milliliters', 'milliliters', 'liters', 'liter'];
@@ -330,6 +232,7 @@ async function fetchIngredientItemEdamam(ingredientItems) {
     }
 }
 
+// no longer valid
 function extractFirstNumber(ingredientItemText) {
     // Regular expression to find the first number, decimal, or fraction in the string
     const match = ingredientItemText.match(/(\d+\.\d+|\d+\/\d+|\d+)/);
@@ -403,4 +306,4 @@ async function getIngredientUnit(ingredientId) {
 }
 
 
-module.exports = { transformData, createIngredientListEntry }
+module.exports = { createIngredientListEntry }
