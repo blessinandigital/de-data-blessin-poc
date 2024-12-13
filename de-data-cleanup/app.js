@@ -1,33 +1,46 @@
 const fetchData = require("./fetchData")
+const dotenv = require('dotenv');
 
-async function getData() {
-    const ingredientSectionContentType = process.env.CONTENT_TYPE_INGREDIENT_SECTION
-    const ingredientItemContentType = process.env.CONTENT_TYPE_INGREDIENT_ITEM
-    // const {fetchedIngredientSectionData, fetchedIngredientItemsData} = await fetchData();
-    // const fetchedIngredientSectionData = await fetchData(ingredientSectionContentType);
+dotenv.config();
+
+const ingredientItemContentType = process.env.CONTENT_TYPE_INGREDIENT_ITEM
+const ingredientContentType = process.env.CONTENT_TYPE_INGREDIENT
+
+async function getIngredientItemData() {
     const fetchedIngredientItemsData = await fetchData(ingredientItemContentType);
 
-    // const ingredientSection = fetchedData.map((data) => data["ingredientObject"])
+    console.log('ingredientItem fetched --->: ', fetchedIngredientItemsData)
 
-    // console.log('ingredientSection --->: ', fetchedIngredientSectionData)
-    // console.log('ingredientItem --->: ', fetchedIngredientItemsData)
-
-    let ingredientSectionList = [];
     let ingredientItemList = [];
-    const filteredIngredientItem = fetchedIngredientItemsData.filter((ingredientEntry) => ingredientEntry.sys['contentType']['sys']['id'] === process.env.CONTENT_TYPE_INGREDIENT_ITEM)
 
-    for(const entry of filteredIngredientItem) {
-        console.log('single entry --> ', entry.sys['contentType']['sys'])
-        console.log('single entry fields --> ', entry.fields)
-        // ingredientSectionList.push(entry.fields['name']);
-        ingredientItemList.push(entry.fields['name']);
+    for(const entry of fetchedIngredientItemsData) {
+        console.log('content type --> ', entry.sys['contentType']['sys'])
+        ingredientItemList.push(entry);
+				console.log('ingredient item - ', entry.fields['name'])
     }
-    // console.log('fields -->', ingredientSectionList)
     console.log('fields -->:', ingredientItemList)
 
-    console.log('ingredient section count: ', ingredientItemList.length)
+    console.log('ingredient items count: ', ingredientItemList.length)
   }
-  
-getData();
+
+async function getIngredientData() {
+	const fetchedIngredientData = await fetchData(ingredientContentType);
+
+	// console.log('ingredient fetched --->: ', fetchedIngredientData)
+
+	let ingredientList = [];
+
+	for(const entry of fetchedIngredientData) {
+			console.log('content type --> ', entry.sys['contentType']['sys'])
+			console.log('ingredient - ', entry.fields['name'])
+			console.log('ingredient (unit) - ', entry.fields['imperialUnit'], entry.fields['energyKK'])
+			ingredientList.push(entry);
+	}
+	console.log('fields ingredients -->:', ingredientList)
+
+	console.log('ingredient count: ', ingredientList.length)
+}
+getIngredientItemData();
+getIngredientData();
 
 console.log("Hello")

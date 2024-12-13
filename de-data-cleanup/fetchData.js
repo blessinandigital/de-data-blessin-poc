@@ -15,7 +15,11 @@ async function fetchData(contentType){
     
     const ingredientList = client.getSpace(spaceId)
     .then((space) => space.getEnvironment(environmentId))
-    .then((environment) => environment.getEntries({content_type: contentType, limit: 1000}))
+    .then((environment) => environment.getEntries({
+        content_type: contentType,
+        limit: 150,
+        
+    }))
     .then((ingredientEntries) => ingredientEntries.items)
     
     return ingredientList
